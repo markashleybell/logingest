@@ -1,0 +1,16 @@
+12.0
+14
+1		SQLCHAR				0		0		"^"		1	timestamp				""
+2		SQLCHAR				0		0		"^"		2	server_ip				Latin1_General_CI_AS
+3		SQLCHAR				0		0		"^"		3	method					Latin1_General_CI_AS
+4		SQLCHAR				0		0		"^"		4	uri					Latin1_General_CI_AS
+5		SQLCHAR				0		0		"^"		5	query					Latin1_General_CI_AS
+6		SQLCHAR				0		0		"^"		6	server_port				""
+7		SQLCHAR				0		0		"^"		7	client_username				Latin1_General_CI_AS
+8		SQLCHAR				0		0		"^"		8	client_ip				Latin1_General_CI_AS
+9		SQLCHAR				0		0		"^"		9	user_agent				Latin1_General_CI_AS
+10		SQLCHAR				0		0		"^"		10	referer					Latin1_General_CI_AS
+11		SQLCHAR				0		0		"^"		11	status					""
+12		SQLCHAR				0		0		"^"		12	substatus				""
+13		SQLCHAR				0		0		"^"		13	win32_status				""
+14		SQLCHAR				0		0		"\n"		14	time_taken				""
