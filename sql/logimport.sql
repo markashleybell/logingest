@@ -2,9 +2,11 @@ USE LogAnalysis
 GO
 
 BULK INSERT dbo.entries
-FROM 'C:\Temp\logingest\u_ex210802.csv'
+FROM 'C:\Temp\logingest\csv\test.csv'
 WITH (FORMATFILE = 'C:\Src\logingest\sql\logformat.fmt', CODEPAGE = 'RAW', FIRSTROW = 2);
 
-SELECT TOP 100 * FROM dbo.entries
+SELECT COUNT(*) AS TotalRows FROM dbo.entries
 
--- ADD INDEXES
+SELECT TOP 100 * FROM dbo.entries ORDER BY [timestamp] DESC
+
+-- ADD INDEXES?

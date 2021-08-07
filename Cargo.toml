@@ -8,4 +8,5 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0.42"
 csv = "1.1"
+glob = "0.3.0"
 structopt = "0.3.22"
