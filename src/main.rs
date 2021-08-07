@@ -3,57 +3,39 @@ use std::path::{Path};
 use std::io::{BufReader, BufRead, BufWriter, Read};
 
 fn main() {
-    let log_path = match std::env::args().nth(1) {
+    let source_log_param = match std::env::args().nth(1) {
         Some(lp) => lp,
-        None => panic!("No log path specified")
+        None => panic!("No log path specified"),
     };
 
-    let csv_path = match std::env::args().nth(2) {
-        Some(cp) => cp,
-        None => str::replace(&log_path, ".log", ".csv")
-    };
+    let output_csv_param = std::env::args().nth(2)
+        .unwrap_or(str::replace(&source_log_param, ".log", ".csv"));
 
-    let log_file = Path::new(&log_path);
-    let csv_file = Path::new(&csv_path);
+    let source_log_path = Path::new(&source_log_param);
+    let output_csv_path = Path::new(&output_csv_param);
 
-    /*
-    let reader = buffered_reader(log_path);
-
-    for line in reader.lines() {
-        let l = &line.unwrap();
-
-        let t = parse_line(l);
-
-        match t {
-            Ok(entry) => { println!("{}", &entry); }
-            Err(_) => { println!("Parse Error"); }
-        }
-    }
-    */
-
-    let file = match File::open(log_file) {
-        Err(err) => panic!("Couldn't open {}: {}", log_file.display(), err.to_string()),
+    let source_log_file = match File::open(source_log_path) {
         Ok(file) => file,
+        Err(err) => panic!("Couldn't open {}: {}", source_log_path.display(), err.to_string()),
     };
 
-    let mut reader = BufReader::with_capacity(128 * 1024, file);
+    let mut reader = BufReader::with_capacity(128 * 1024, source_log_file);
 
+    // Skip the IIS log header (4 lines)
     reader.by_ref().lines().take(4).for_each(drop);
 
     let mut csv = csv::ReaderBuilder::new()
         .delimiter(b' ')
         .from_reader(reader);
 
-    let out_path = Path::new(csv_file);
-
-    let out_file = match File::create(out_path) {
-        Err(err) => panic!("Couldn't create {}: {}", csv_file.display(), err.to_string()),
+    let output_csv_file = match File::create(output_csv_path) {
         Ok(file) => file,
+        Err(err) => panic!("Couldn't create {}: {}", output_csv_path.display(), err.to_string()),
     };
 
-    let writer = BufWriter::with_capacity(128 * 1024, out_file);
+    let writer = BufWriter::with_capacity(128 * 1024, output_csv_file);
 
-    let mut wtr = csv::WriterBuilder::new()
+    let mut csv_writer = csv::WriterBuilder::new()
         .delimiter(b'^')
         .quote_style(csv::QuoteStyle::Never)
         .from_writer(writer);
@@ -75,14 +57,14 @@ fn main() {
         "time_taken"
     ];
 
-    wtr.write_record(headers).expect("sss");
+    csv_writer.write_record(headers).expect("Couldn't write header row");
 
     for result in csv.records() {
-        let record = result.expect("invalid");
+        let record = result.expect("Couldn't read row");
         
         let c = format!("{} {}", &record[0], &record[1]);
-        // let c = format!("{}{}", str::replace(&record[0], "-", ""), str::replace(&record[1], ":", ""));
 
+        // SURELY there must be a cleaner way to do this??
         let n = [
             &c,
             &record[2],
@@ -100,6 +82,6 @@ fn main() {
             &record[14]
         ];
 
-        wtr.write_record(n).expect("sss");
+        csv_writer.write_record(n).expect("Couldn't write row");
     }
 }
